@@ -3,6 +3,8 @@ package com.example.coblan.mycrosswebview;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         xWalkWebView = (XWalkView) findViewById(R.id.xwalkWebView);
         xWalkWebView.setUIClient(new UIClient(xWalkWebView));
-        xWalkWebView.load("http://192.168.1.101:8080/wx/home.wx", null);
+        xWalkWebView.load("http://10.0.18.6:8080/home", null);
 
         // turn on debugging
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
@@ -55,8 +57,14 @@ public class MainActivity extends AppCompatActivity {
                 DownloadManager downloadManager=(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
 //                downloadManager = (DownloadManager)getSystemService(serviceString);
 
+                String file_name = url.substring(url.lastIndexOf("/") + 1, url.length());
+
                 Uri uri = Uri.parse(url);
                 DownloadManager.Request request = new DownloadManager.Request(uri);
+//                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir() ;
+                String applicationName = getApplicationName();
+
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS , "/"+applicationName+"/"+file_name);
                 long downloadId = downloadManager.enqueue(request);
 //                long reference = downloadManager.enqueue(request);
 
@@ -82,6 +90,20 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(i);
             }
         });
+    }
+
+    public String getApplicationName() {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = getApplicationContext().getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            applicationInfo = null;
+        }
+        String applicationName =
+                (String) packageManager.getApplicationLabel(applicationInfo);
+        return applicationName;
     }
 
     @Override

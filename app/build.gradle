@@ -21,11 +21,11 @@ android {
         }
     }
     productFlavors {
-        armv7 {
-            ndk {
-                abiFilters "armeabi-v7a", ""
-            }
-        }
+//        armv7 {
+//            ndk {
+//                abiFilters "armeabi-v7a", ""
+//            }
+//        }
         x86 {
             ndk {
                 abiFilters "x86", ""
