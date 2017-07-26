@@ -37,12 +37,14 @@ public class MainActivity extends AppCompatActivity {
 
         xWalkWebView = (XWalkView) findViewById(R.id.xwalkWebView);
         xWalkWebView.setUIClient(new UIClient(xWalkWebView));
-        xWalkWebView.load("http://10.0.18.6:8080/home", null);
+        xWalkWebView.load("http://192.168.1.101:8000/home", null);
 
         // turn on debugging
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+        xWalkWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
-        Log.i("init","init windows");
+        String[] patterns ={"http://*/",};
+        xWalkWebView.setOriginAccessWhitelist("http://192.168.1.101:8000/home",patterns);
         xWalkWebView.setDownloadListener(new XWalkDownloadListener(getApplicationContext()) {
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String
