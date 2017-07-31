@@ -11,10 +11,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.ValueCallback;
 
+import org.xwalk.core.JavascriptInterface;
 import org.xwalk.core.XWalkDownloadListener;
 import org.xwalk.core.XWalkPreferences;
+import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 
@@ -24,9 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static org.xwalk.core.extension.JsStubGenerator.TAG;
+
 public class MainActivity extends AppCompatActivity {
 
     private XWalkView xWalkWebView;
+    private XWalkView xWalkStart;
 
     HttpDownloader downloader ;
 
@@ -35,16 +41,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        xWalkStart = (XWalkView) findViewById(R.id.xwalkStart);
+        xWalkStart.load("file:///android_asset/splash.html", null);
+
         xWalkWebView = (XWalkView) findViewById(R.id.xwalkWebView);
         xWalkWebView.setUIClient(new UIClient(xWalkWebView));
-        xWalkWebView.load("http://192.168.1.101:8000/home", null);
+//        xWalkWebView.setResourceClient(new ResourceClient(xWalkWebView,xWalkStart));
+//        xWalkWebView.load("http://192.168.1.101:8000/home", null);
+
+
+
+        xWalkWebView.load("http://10.0.18.6:8000/f7/home.f7", null);
+
 
         // turn on debugging
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+
+        // 抄的，应该是与本地文件访问相关。未验证过。
         xWalkWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
+        // 下面是白名单，允许ajax跨域请求
         String[] patterns ={"http://*/",};
         xWalkWebView.setOriginAccessWhitelist("http://192.168.1.101:8000/home",patterns);
+
+        xWalkWebView.getSettings().setJavaScriptEnabled(true);
+        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart),"jsobj");
+
+        // 下面是下载资源控制，将下载到 download/{app_name} 下
         xWalkWebView.setDownloadListener(new XWalkDownloadListener(getApplicationContext()) {
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String
@@ -72,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+                // 自定义的下载，主要注意是，不能在主线程启动下载，需要多线程进行下载。现在用downloadManager进行下载了，不再需要这些代码了。
 //                Runnable networkTask = new Runnable() {
 //
 //                    @Override
@@ -217,8 +242,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -231,5 +254,67 @@ public class MainActivity extends AppCompatActivity {
                 storageDir      /* directory */
         );
         return imageFile;
+    }
+}
+class ResourceClient extends XWalkResourceClient {
+    private boolean started=false;
+    private XWalkView startView;
+
+    public ResourceClient(XWalkView xwalkView,XWalkView startView) {
+        super(xwalkView);
+        this.startView=startView;
+    }
+
+    public void onLoadStarted(XWalkView view, String url) {
+        super.onLoadStarted(view, url);
+//        Log.d(TAG, "Load Started:" + url);
+    }
+
+    public void onLoadFinished(XWalkView view, String url) {
+        super.onLoadFinished(view, url);
+        if(!this.started){
+            this.startView.setVisibility(View.GONE);
+            view.setVisibility(View.VISIBLE);
+            this.started=true;
+
+        }
+        Log.d("loaded url", "Load Finished:" + url);
+    }
+
+}
+
+class JSObj{
+    private XWalkView xwalkView;
+    private XWalkView startView;
+    private  boolean started=false;
+
+    public JSObj(XWalkView xwalkView,XWalkView startView) {
+        this.xwalkView=xwalkView;
+        this.startView=startView;
+    }
+
+    @JavascriptInterface
+    public void contentShow(){
+        Log.d("loaded url","here is start");
+        if(!this.started){
+            xwalkView.setVisibility(View.VISIBLE);
+            startView.setVisibility(View.GONE);
+//            Runnable networkTask = new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        // TODO
+//                        // 在这里进行 http request.网络请求相关操作
+//                        startView.setVisibility(View.GONE);
+//                        xwalkView.setVisibility(View.VISIBLE);
+//                    }
+//                };
+//                new Thread(networkTask).start();
+
+
+            this.started=true;
+        }
+
+        Log.d("loaded url","here is ok");
     }
 }

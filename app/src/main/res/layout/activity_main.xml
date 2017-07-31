@@ -12,6 +12,15 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#000000"
+        android:visibility="gone"
+        />
+
+    <org.xwalk.core.XWalkView
+        android:id="@+id/xwalkStart"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
         />
 
 </android.support.constraint.ConstraintLayout>
