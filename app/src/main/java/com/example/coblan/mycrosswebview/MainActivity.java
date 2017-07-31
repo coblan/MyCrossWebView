@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,13 +47,15 @@ public class MainActivity extends AppCompatActivity {
         xWalkStart.load("file:///android_asset/splash.html", null);
 
         xWalkWebView = (XWalkView) findViewById(R.id.xwalkWebView);
+//        xWalkWebView= new XWalkView(this);
         xWalkWebView.setUIClient(new UIClient(xWalkWebView));
+
 //        xWalkWebView.setResourceClient(new ResourceClient(xWalkWebView,xWalkStart));
 //        xWalkWebView.load("http://192.168.1.101:8000/home", null);
 
 
 
-        xWalkWebView.load("http://10.0.18.6:8000/f7/home.f7", null);
+        xWalkWebView.load("http://192.168.1.101:8080/f7/home.f7", null);
 
 
         // turn on debugging
@@ -63,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         // 下面是白名单，允许ajax跨域请求
         String[] patterns ={"http://*/",};
-        xWalkWebView.setOriginAccessWhitelist("http://192.168.1.101:8000/home",patterns);
+        xWalkWebView.setOriginAccessWhitelist("http://192.168.1.101:8080/home",patterns);
 
         xWalkWebView.getSettings().setJavaScriptEnabled(true);
-        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart),"jsobj");
+        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart,this),"jsobj");
 
         // 下面是下载资源控制，将下载到 download/{app_name} 下
         xWalkWebView.setDownloadListener(new XWalkDownloadListener(getApplicationContext()) {
@@ -286,19 +289,31 @@ class ResourceClient extends XWalkResourceClient {
 class JSObj{
     private XWalkView xwalkView;
     private XWalkView startView;
+    private Activity activity;
     private  boolean started=false;
 
-    public JSObj(XWalkView xwalkView,XWalkView startView) {
+    public JSObj(XWalkView xwalkView,XWalkView startView,Activity activity) {
         this.xwalkView=xwalkView;
         this.startView=startView;
+        this.activity=activity;
     }
 
     @JavascriptInterface
     public void contentShow(){
         Log.d("loaded url","here is start");
         if(!this.started){
-            xwalkView.setVisibility(View.VISIBLE);
-            startView.setVisibility(View.GONE);
+            activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+//                        ConstraintLayout layout= (ConstraintLayout) activity.findViewById(R.id.mainlayout);
+//                        layout.removeView(startView);
+//                        layout.addView(xwalkView);
+                        startView.setVisibility(View.GONE);
+//                        xwalkView.setVisibility(View.VISIBLE);
+                    }
+                });
+
 //            Runnable networkTask = new Runnable() {
 //
 //                    @Override

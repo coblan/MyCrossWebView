@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.coblan.mycrosswebview.MainActivity">
+    android:orientation="vertical">
 
-    <org.xwalk.core.XWalkView
-        android:id="@+id/xwalkWebView"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#000000"
-        android:visibility="gone"
-        />
+
 
     <org.xwalk.core.XWalkView
         android:id="@+id/xwalkStart"
@@ -23,4 +14,46 @@
         android:background="#000000"
         />
 
-</android.support.constraint.ConstraintLayout>
+    <org.xwalk.core.XWalkView
+    android:id="@+id/xwalkWebView"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000"
+    />
+
+
+
+</FrameLayout>
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:id="@+id/mainlayout"-->
+    <!--tools:context="com.example.coblan.mycrosswebview.MainActivity">-->
+
+    <!--&lt;!&ndash;<org.xwalk.core.XWalkView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/xwalkWebView"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:orientation="vertical"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="fill_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="fill_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:background="#000000"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:visibility="gone"&ndash;&gt;-->
+        <!--&lt;!&ndash;/>&ndash;&gt;-->
+
+    <!--<org.xwalk.core.XWalkView-->
+        <!--android:id="@+id/xwalkStart"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:background="#000000"-->
+        <!--/>-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
+
+
+
