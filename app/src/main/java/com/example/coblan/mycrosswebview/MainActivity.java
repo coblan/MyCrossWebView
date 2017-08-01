@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        xWalkWebView.load("http://192.168.1.101:8080/f7/home.f7", null);
+        xWalkWebView.load("http://10.0.18.6:8080/home", null);
 
 
         // turn on debugging
@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         // 下面是白名单，允许ajax跨域请求
         String[] patterns ={"http://*/",};
-        xWalkWebView.setOriginAccessWhitelist("http://192.168.1.101:8080/home",patterns);
+        xWalkWebView.setOriginAccessWhitelist("http://10.0.18.6:8080/home",patterns);
 
         xWalkWebView.getSettings().setJavaScriptEnabled(true);
-        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart,this),"jsobj");
+        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart,this),"java_obj");
 
         // 下面是下载资源控制，将下载到 download/{app_name} 下
         xWalkWebView.setDownloadListener(new XWalkDownloadListener(getApplicationContext()) {
@@ -291,11 +291,13 @@ class JSObj{
     private XWalkView startView;
     private Activity activity;
     private  boolean started=false;
+    private Long startTimestamp;
 
     public JSObj(XWalkView xwalkView,XWalkView startView,Activity activity) {
         this.xwalkView=xwalkView;
         this.startView=startView;
         this.activity=activity;
+        this.startTimestamp=System.currentTimeMillis();
     }
 
     @JavascriptInterface
@@ -313,23 +315,14 @@ class JSObj{
 //                        xwalkView.setVisibility(View.VISIBLE);
                     }
                 });
-
-//            Runnable networkTask = new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        // TODO
-//                        // 在这里进行 http request.网络请求相关操作
-//                        startView.setVisibility(View.GONE);
-//                        xwalkView.setVisibility(View.VISIBLE);
-//                    }
-//                };
-//                new Thread(networkTask).start();
-
-
             this.started=true;
         }
 
         Log.d("loaded url","here is ok");
+    }
+
+    @JavascriptInterface
+    public String getStartTimestamp(){
+        return this.startTimestamp.toString();
     }
 }
