@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        xWalkWebView.load("http://10.0.18.6:8080/home", null);
+        xWalkWebView.load("http://wallpaper.enjoyst.com/home", null);
 
 
         // turn on debugging
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 下面是白名单，允许ajax跨域请求
         String[] patterns ={"http://*/",};
-        xWalkWebView.setOriginAccessWhitelist("http://10.0.18.6:8080/home",patterns);
+        xWalkWebView.setOriginAccessWhitelist("http://wallpaper.enjoyst.com/home",patterns);
 
         xWalkWebView.getSettings().setJavaScriptEnabled(true);
         xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart,this),"java_obj");
