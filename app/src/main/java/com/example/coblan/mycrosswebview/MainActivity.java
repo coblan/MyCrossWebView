@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.ValueCallback;
+import android.widget.Toast;
 
 import org.xwalk.core.JavascriptInterface;
 import org.xwalk.core.XWalkDownloadListener;
@@ -28,12 +29,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.zxing.activity.CaptureActivity;
+
 import static org.xwalk.core.extension.JsStubGenerator.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
     private XWalkView xWalkWebView;
     private XWalkView xWalkStart;
+    private JSObj java_obj;
 
     HttpDownloader downloader ;
 
@@ -44,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         xWalkStart = (XWalkView) findViewById(R.id.xwalkStart);
+        xWalkStart.setUIClient(new UIClient(xWalkStart));
         xWalkStart.load("file:///android_asset/splash.html", null);
+//        xWalkStart.getSettings().setJavaScriptEnabled(true);
+//        xWalkStart.addJavascriptInterface(new JSObj(xWalkStart,xWalkStart,this),"java_obj");
+
+
+
 
         xWalkWebView = (XWalkView) findViewById(R.id.xwalkWebView);
 //        xWalkWebView= new XWalkView(this);
@@ -55,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        xWalkWebView.load("http://10.0.18.6:8080/home", null);
+        xWalkWebView.load("http://192.168.1.101:8000/mb", null);
 
 
         // turn on debugging
@@ -69,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
         xWalkWebView.setOriginAccessWhitelist("http://10.0.18.6:8080/home",patterns);
 
         xWalkWebView.getSettings().setJavaScriptEnabled(true);
-        xWalkWebView.addJavascriptInterface(new JSObj(xWalkWebView,xWalkStart,this),"java_obj");
+
+        java_obj=new JSObj(xWalkWebView,xWalkStart,this);
+        xWalkWebView.addJavascriptInterface(java_obj,"java_obj");
 
         // 下面是下载资源控制，将下载到 download/{app_name} 下
         xWalkWebView.setDownloadListener(new XWalkDownloadListener(getApplicationContext()) {
@@ -162,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     private ValueCallback<Uri> mFilePathCallback;
     private String mCameraPhotoPath;
     public static final int INPUT_FILE_REQUEST_CODE = 1;
@@ -213,8 +227,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 100) { //100 代表二维码扫描回来
+            if(data == null){
+                this.java_obj.set_qr_code("");
+            }else{
+                Bundle bundle = data.getExtras();
+                String scanResult = bundle.getString("qr_scan_result");
+                this.java_obj.set_qr_code(scanResult);
+                Log.d("jjyy888",scanResult);
+//                Toast.makeText(MainActivity.this, scanResult, Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+
 
         if(requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
             xWalkWebView.onActivityResult(requestCode, resultCode, data);
@@ -292,12 +322,15 @@ class JSObj{
     private Activity activity;
     private  boolean started=false;
     private Long startTimestamp;
+    private Intent scan_intent;
+    public String qr_code;
 
     public JSObj(XWalkView xwalkView,XWalkView startView,Activity activity) {
         this.xwalkView=xwalkView;
         this.startView=startView;
         this.activity=activity;
         this.startTimestamp=System.currentTimeMillis();
+        this.qr_code="";
     }
 
     @JavascriptInterface
@@ -325,4 +358,22 @@ class JSObj{
     public String getStartTimestamp(){
         return this.startTimestamp.toString();
     }
+
+    @JavascriptInterface
+    public void qr_scan(){
+        this.scan_intent = new Intent(this.activity, CaptureActivity.class);
+        this.activity.startActivityForResult(this.scan_intent, 100);
+    }
+
+    @JavascriptInterface
+    public  void set_qr_code(String qr_code){
+        this.qr_code=qr_code;
+    }
+
+    @JavascriptInterface
+    public String get_qr_code(){
+        return  this.qr_code;
+    }
+
+
 }
