@@ -20,13 +20,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "html","ndk"
     productFlavors {
+        html1 {
+            dimension "html"
+            applicationIdSuffix  ".html1"
+            buildConfigField "String", "HTML_LOCAL", "\"splash.html\""
+            buildConfigField "String", "HTML_REMOTE", "\"http://192.168.1.101:8000/mb\""
+        }
+        html2 {
+            dimension "html"
+            applicationIdSuffix  ".html2"
+            buildConfigField "String", "HTML_LOCAL", "\"splash.html\""
+            buildConfigField "String", "HTML_REMOTE", "\"https://www.baidu.com\""
+        }
         armv7 {
+            dimension "ndk"
             ndk {
                 abiFilters "armeabi-v7a", ""
             }
         }
         x86 {
+            dimension "ndk"
             ndk {
                 abiFilters "x86", ""
             }

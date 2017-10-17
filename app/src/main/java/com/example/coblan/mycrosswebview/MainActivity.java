@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         xWalkStart = (XWalkView) findViewById(R.id.xwalkStart);
         xWalkStart.setUIClient(new UIClient(xWalkStart));
-        xWalkStart.load("file:///android_asset/splash.html", null);
+        xWalkStart.load("file:///android_asset/"+BuildConfig.HTML_LOCAL, null);
 //        xWalkStart.getSettings().setJavaScriptEnabled(true);
 //        xWalkStart.addJavascriptInterface(new JSObj(xWalkStart,xWalkStart,this),"java_obj");
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        xWalkWebView.load("http://192.168.1.101:8000/mb", null);
+        xWalkWebView.load(BuildConfig.HTML_REMOTE, null);
 
 
         // turn on debugging
